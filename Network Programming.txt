@@ -1,0 +1,12 @@
+﻿TCP : 연결 후 통신. 전화
+1. Echo Server/Client
+2. Echo Server (다중처리, Multi-Thread)
+3. Http Server (Web Server) ***
+4. chat Server/Client
+UDP : 편지.
+5. Echo Server
+6. Time Server
+
+workspace\network\bin에서
+1. java kr.ac.sungkyul.network.test.TCPServer
+2. java -classpath ./ kr.ac.sungkyul.network.test.TCPServer
