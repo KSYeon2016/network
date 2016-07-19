@@ -1,15 +1,17 @@
 package kr.ac.sungkyul.network.echo;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class EchoServer {
+public class EchoServer2 {
 	private final static int SERVER_PORT = 2000;
 
 	public static void main(String[] args) {
@@ -31,34 +33,33 @@ public class EchoServer {
 			Socket socket = serverSocket.accept();
 
 			// 4. 연결 성공
-			InetSocketAddress remoteAddress = (InetSocketAddress) socket.getRemoteSocketAddress();
+			InetSocketAddress remoteAddress = (InetSocketAddress)socket.getRemoteSocketAddress();
 			String remoteHostAddress = remoteAddress.getAddress().getHostAddress();
 			int remoteHostPort = remoteAddress.getPort();
 			System.out.println("[echo] 연결 성공 from " + remoteHostAddress + ":" + remoteHostPort);
 
 			try {
-				// 5. IOStream
-				InputStream is = socket.getInputStream();
-				OutputStream os = socket.getOutputStream();
+				// Stream
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(socket.getInputStream(), "utf-8"));
+				PrintWriter pw = new PrintWriter(
+						new OutputStreamWriter(socket.getOutputStream(), "utf-8"), true);
 	
-				String data = null;
 				while (true) {
-					// 6. 데이터 읽기
-					byte[] buffer = new byte[256];
-					int readBytes = is.read(buffer);
+					// 데이터 읽기
+					String data = br.readLine();
 
 					// 클라이언트가 연결을 끊은 경우
-					if (readBytes <= -1) {
+					if (data == null) {
 						System.out.println("[echo] closed by client");
-						return;
+						break;
 					}
 
 					// 데이터가 온 경우
-					data = new String(buffer, 0, readBytes, "utf-8");
 					System.out.println("[client] : " + data);
 
-					// 7. 데이터 쓰기
-					os.write(data.getBytes("utf-8"));
+					// 데이터 쓰기
+					pw.println(data);
 				}
 			} catch (SocketException e) {
 				System.out.println("[echo] 비정상적으로 클라이언트가 연결을 끊었습니다.");
