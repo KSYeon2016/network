@@ -30,7 +30,8 @@ public class EchoClient2 {
 			BufferedReader br = new BufferedReader(
 					new InputStreamReader(socket.getInputStream(), "utf-8"));
 			PrintWriter pw = new PrintWriter(
-					new OutputStreamWriter(socket.getOutputStream(), "utf-8"), true);	// true : autoflush
+					new OutputStreamWriter(socket.getOutputStream(), "utf-8"), true);
+			// true : autoflush
 
 			while (true) {
 				// 메세지입력

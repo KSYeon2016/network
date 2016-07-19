@@ -27,7 +27,7 @@ public class EchoServer {
 			serverSocket.bind(inetSocketAddress);
 			System.out.println("[echo] bind - " + serverAddress + ":" + SERVER_PORT);
 
-			// 3. accept
+			// 3. accept : 연결 요청 대기
 			Socket socket = serverSocket.accept();
 
 			// 4. 연결 성공
