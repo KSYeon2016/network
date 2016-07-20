@@ -12,19 +12,19 @@ public class ChatClientThread extends Thread {
 	
 	@Override
 	public void run() {
-		while(true){
-			// reader를 통해 읽은 데이터 콘솔에 출력하기(message 처리)
-			try {
+		try {
+			while(true){
+				// reader를 통해 읽은 데이터 콘솔에 출력하기(message 처리)
 				String message = br.readLine();
-				
+					
 				if(message == null){
 					break;
 				}
 				
 				System.out.println(message);
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			System.out.println("채팅 프로그램을 종료합니다.");
 		}
 	}
 
