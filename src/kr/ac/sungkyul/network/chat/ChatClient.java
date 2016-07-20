@@ -11,12 +11,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class ChatClient {
-	private final static String SERVER_IP = "220.67.115.225";
+	private final static String SERVER_IP = "서버 IP주소";
 	private final static int SERVER_PORT = 5000;
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		Scanner scanner = null;
 		Socket socket = null;
+		Thread thread = null;
 		
 		try{
 			// 1. 키보드 연결
@@ -44,11 +46,11 @@ public class ChatClient {
 			pw.flush();
 			
 			// 6. ChatClientThread 시작
-			new ChatClientThread(br).start();
+			thread = new ChatClientThread(br);
+			thread.start();
 			
 			// 7. 키보드 입력 처리
 			while(true){
-				System.out.print(">>");
 				String input = scanner.nextLine();
 				
 				if("QUIT".equals(input.toUpperCase()) == true){
@@ -63,16 +65,25 @@ public class ChatClient {
 				}
 			}
 		}catch(IOException e){
-			ChatServer.log("error:" + e);
+			log("error:" + e);
 		}finally{
 			try {
 				// 10. 자원정리
-				socket.close();
-				scanner.close();
+				if( scanner != null ) {
+					scanner.close();
+				}
+				thread.stop();
+				if( socket != null && socket.isClosed() == false) {
+					socket.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static void log(String logMessage) {
+		System.out.println(logMessage);
 	}
 
 }

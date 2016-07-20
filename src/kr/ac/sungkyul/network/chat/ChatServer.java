@@ -1,7 +1,7 @@
 package kr.ac.sungkyul.network.chat;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -13,10 +13,11 @@ public class ChatServer {
 	private final static int SERVER_PORT = 5000;
 
 	public static void main(String[] args) {
-		List<Writer> listWriter = new Vector<Writer>();
+		List<PrintWriter> listWriter = new Vector<PrintWriter>();
 		
 		try {
 			// 1. 서버 소켓 생성
+			@SuppressWarnings("resource")
 			ServerSocket serverSocket = new ServerSocket();
 			
 			// 2. 바인딩

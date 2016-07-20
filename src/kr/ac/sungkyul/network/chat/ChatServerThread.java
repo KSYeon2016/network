@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -13,9 +14,9 @@ import java.util.List;
 public class ChatServerThread extends Thread {
 	private String nickname;
 	private Socket socket;
-	List<Writer> listWriters;
+	List<PrintWriter> listWriters;
 
-	public ChatServerThread(Socket socket, List<Writer> listWriters) {
+	public ChatServerThread(Socket socket, List<PrintWriter> listWriters) {
 		this.socket = socket;
 		this.listWriters = listWriters;
 	}
@@ -23,6 +24,10 @@ public class ChatServerThread extends Thread {
 	@Override
 	public void run() {
 		// 1. Remote Host Information
+		InetSocketAddress inetSocketAddress = (InetSocketAddress)socket.getRemoteSocketAddress();
+		String remoteHostAddress = inetSocketAddress.getHostName();
+		int remoteHostPort = inetSocketAddress.getPort();
+		ChatServer.log( "연결됨 from " + remoteHostAddress + ":" + remoteHostPort );
 		
 		try {
 			// 2. Stream
@@ -51,6 +56,7 @@ public class ChatServerThread extends Thread {
 					doMessage(tokens[1]);
 				} else if("quit".equals(tokens[0])){
 					doQuit(pw);
+					break;
 				} else{
 					ChatServer.log("에러 : 알 수 없는 요청 (" + tokens[0] + ")");
 				}
@@ -60,37 +66,37 @@ public class ChatServerThread extends Thread {
 		}
 	}
 	
-	private void doJoin(String nickname, Writer writer){
+	private void doJoin(String nickname, PrintWriter pw){
 		this.nickname = nickname;
 		
 		String data = nickname + "님이 참여하였습니다.";
 		broadcast(data);
 		
 		// writer pool에 저장
-		listWriters.add(writer);
+		listWriters.add(pw);
 		
 		// ack
-		PrintWriter printWriter = (PrintWriter)writer;
-		printWriter.println("join:ok");
-		printWriter.flush();
+		pw.println("join:ok");
+		pw.flush();
 	}
 	
 	private void broadcast(String data) {
-		for(Writer writer : listWriters){
-			PrintWriter printWriter = (PrintWriter)writer;
-			printWriter.println(data);
-			printWriter.flush();
+//		for(Writer writer : listWriters){
+//			PrintWriter printWriter = (PrintWriter)writer;
+//			printWriter.println(data);
+//			printWriter.flush();
+//		}
+		int count = listWriters.size();
+		for( int i = 0; i < count; i++ ) {
+			PrintWriter pw = listWriters.get( i );
+			pw.println( data );
+			pw.flush();
 		}
 	}
 
 	private void doMessage(String message) {
 		String msgBc = nickname + ":" + message;
-		
-		for(Writer writer : listWriters){
-			PrintWriter printWriter = (PrintWriter)writer;
-			printWriter.println(msgBc);
-			printWriter.flush();
-		}
+		broadcast(msgBc);
 	}
 	
 	private void doQuit(Writer writer) {
