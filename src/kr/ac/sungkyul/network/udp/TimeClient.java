@@ -8,14 +8,14 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class EchoClient { 
-	private final static String SERVER_IP = "220.67.115.225";
-	private final static int SERVER_PORT = 1000;
+public class TimeClient {
+	private final static int PORT = 5000;
+	private final static String IP = "220.67.115.225";
 	private final static int BUFFER_SIZE = 1024;
-
+	
 	public static void main(String[] args) {
-		Scanner scanner = null;
 		DatagramSocket socket = null;
+		Scanner scanner = null;
 		
 		try {
 			// 키보드 연결
@@ -25,7 +25,7 @@ public class EchoClient {
 			socket = new DatagramSocket();
 			
 			while(true){
-				// 사용자 입력값 받음
+				// 값 입력 받기
 				System.out.print(">>");
 				String message = scanner.nextLine();
 				
@@ -36,22 +36,22 @@ public class EchoClient {
 				// 데이터 송신
 				byte[] sendData = message.getBytes(StandardCharsets.UTF_8);
 				DatagramPacket sendPacket = new DatagramPacket(
-						sendData,
-						sendData.length,	// 버퍼 길이
-						new InetSocketAddress(SERVER_IP, SERVER_PORT));	// 받는 주소
+						sendData, 
+						sendData.length, 
+						new InetSocketAddress(IP, PORT));
 				socket.send(sendPacket);
 				
 				// 데이터 수신
 				DatagramPacket receivePacket = new DatagramPacket(
 						new byte[BUFFER_SIZE], BUFFER_SIZE);
-				socket.receive(receivePacket);	// block
+				socket.receive(receivePacket);
 				
 				String data = new String(
 						receivePacket.getData(),
 						0,
 						receivePacket.getLength(),
 						StandardCharsets.UTF_8);
-				System.out.println("<<" + data);
+				System.out.println(data);
 			}
 		} catch (SocketException e) {
 			e.printStackTrace();
